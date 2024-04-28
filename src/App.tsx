@@ -5,67 +5,66 @@
  * @format
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  ActivityIndicator,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
+  
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {setupPlayer, addTrack} from '../musicPlayerServices'
+import MusicPlayer from './screens/MusicPlayer';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
 
 
  
 
-function App(): React.JSX.Element {
+function App(): JSX.Element {
   
+const [playerReady, setPlayerReady] = useState(false)
+  
+async function setup(){
+  let isSetup = await setupPlayer()
+  if(isSetup){
+    await addTrack()
+  }
+setPlayerReady(isSetup)
+}
 
-  
+useEffect(() =>{
+setup()
+}, [])
+
+if(!playerReady){
+  return (
+  <SafeAreaView>
+    <ActivityIndicator />
+  </SafeAreaView>
+  )
+}
 
   return (
-    <SafeAreaView >
+    <View >
       <StatusBar
-        
+        barStyle={'light-content'}
       />
-      <ScrollView>
-        <Text>Spotify App</Text>
-      </ScrollView>
-    </SafeAreaView>
+      
+      <MusicPlayer />
+      
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+ container:{
+  flex: 1
+ }
 });
 
 export default App;
